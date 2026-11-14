@@ -1,0 +1,79 @@
+name: Deploy to Hostinger
+
+# Every push to main goes live on iconors.com.
+# You can also run it by hand: GitHub → Actions → "Deploy to Hostinger" → Run workflow.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# Never run two deploys at the same time.
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      SSH_HOST: ${{ secrets.SSH_HOST }}
+      SSH_PORT: ${{ secrets.SSH_PORT }}
+      SSH_USER: ${{ secrets.SSH_USER }}
+      DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+
+    steps:
+      - name: Check deploy secrets are set
+        id: check
+        run: |
+          if [ -z "$SSH_HOST" ] || [ -z "$SSH_USER" ] || [ -z "$DEPLOY_PATH" ] || [ -z "${{ secrets.SSH_PRIVATE_KEY }}" ]; then
+            echo "::warning::Deploy skipped: add SSH_HOST, SSH_PORT, SSH_USER, DEPLOY_PATH and SSH_PRIVATE_KEY in repo Settings → Secrets → Actions."
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Check out code
+        if: steps.check.outputs.ready == 'true'
+        uses: actions/checkout@v4
+
+      - name: Set up SSH
+        if: steps.check.outputs.ready == 'true'
+        run: |
+          mkdir -p ~/.ssh
+          printf '%s\n' "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -p "${SSH_PORT:-22}" -H "$SSH_HOST" >> ~/.ssh/known_hosts 2>/dev/null
+
+      # Copies only files tracked in git. It never deletes anything on the server,
+      # so .env, vendor/, storage/ uploads and logs on Hostinger are left alone.
+      - name: Upload code to Hostinger
+        if: steps.check.outputs.ready == 'true'
+        run: |
+          rsync -rlz --checksum --itemize-changes \
+            --exclude='.git/' --exclude='.github/' \
+            --exclude='CLAUDE.md' --exclude='.gitattributes' \
+            -e "ssh -p ${SSH_PORT:-22} -i ~/.ssh/deploy_key" \
+            ./laravel ./public_html \
+            "$SSH_USER@$SSH_HOST:$DEPLOY_PATH/"
+
+      - name: Install dependencies, migrate, refresh caches
+        if: steps.check.outputs.ready == 'true'
+        run: |
+          ssh -p "${SSH_PORT:-22}" -i ~/.ssh/deploy_key "$SSH_USER@$SSH_HOST" DEPLOY_PATH="$DEPLOY_PATH" 'bash -s' <<'REMOTE'
+          set -e
+          cd "$DEPLOY_PATH/laravel"
+          echo "PHP: $(php -r 'echo PHP_VERSION;')"
+
+          if command -v composer >/dev/null 2>&1; then
+            composer install --no-dev --optimize-autoloader --no-interaction --no-progress
+          else
+            echo "composer not found on server; skipping (vendor/ left as is)"
+          fi
+
+          php artisan migrate --force
+          php artisan optimize:clear
+          php artisan config:cache
+          php artisan route:cache
+          php artisan view:cache
+          echo "Deploy finished."
+          REMOTE
