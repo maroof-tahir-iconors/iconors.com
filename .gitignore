@@ -1,0 +1,35 @@
+# ---- Secrets (never commit) ----
+.env
+.env.*
+!.env.example
+laravel/.env
+laravel/.env.*
+!laravel/.env.example
+auth.json
+
+# ---- Dependencies (installed on the server by composer) ----
+laravel/vendor/
+node_modules/
+
+# ---- Runtime data: uploads, cache, logs, sessions (stay on the server) ----
+laravel/storage/*
+!laravel/storage/.gitignore
+public_html/storage/
+public_html/hot
+laravel/bootstrap/cache/*.php
+
+# ---- Old manual backup copies (kept locally only) ----
+laravel/_backup-*/
+laravel/_packs-update-*/
+*.bak
+
+# ---- Archives / dumps / OS junk ----
+*.zip
+*.sql
+*.sql.gz
+*.log
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+.phpunit.result.cache

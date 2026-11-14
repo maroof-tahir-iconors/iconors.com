@@ -1,0 +1,76 @@
+{
+  "_lottie-B5z9iVy-.js": {
+    "file": "assets/lottie-B5z9iVy-.js",
+    "name": "lottie",
+    "isDynamicEntry": true
+  },
+  "_utils-BSDITuH3.js": {
+    "file": "assets/utils-BSDITuH3.js",
+    "name": "utils"
+  },
+  "node_modules/bootstrap-icons/font/fonts/bootstrap-icons.woff": {
+    "file": "assets/bootstrap-icons-BeopsB42.woff",
+    "src": "node_modules/bootstrap-icons/font/fonts/bootstrap-icons.woff"
+  },
+  "node_modules/bootstrap-icons/font/fonts/bootstrap-icons.woff2": {
+    "file": "assets/bootstrap-icons-mSm7cUeB.woff2",
+    "src": "node_modules/bootstrap-icons/font/fonts/bootstrap-icons.woff2"
+  },
+  "node_modules/swiper/modules/index.mjs": {
+    "file": "assets/index-CE5RYA4h.js",
+    "name": "index",
+    "src": "node_modules/swiper/modules/index.mjs",
+    "isDynamicEntry": true,
+    "imports": [
+      "_utils-BSDITuH3.js"
+    ]
+  },
+  "node_modules/swiper/modules/navigation.css": {
+    "file": "assets/navigation-CcPAUVWD.css",
+    "src": "node_modules/swiper/modules/navigation.css"
+  },
+  "node_modules/swiper/modules/pagination.css": {
+    "file": "assets/pagination-DbhFIee8.css",
+    "src": "node_modules/swiper/modules/pagination.css"
+  },
+  "node_modules/swiper/swiper.css": {
+    "file": "assets/swiper-C2J0D0kV.css",
+    "src": "node_modules/swiper/swiper.css"
+  },
+  "node_modules/swiper/swiper.mjs": {
+    "file": "assets/swiper-g4hKQUVu.js",
+    "name": "swiper",
+    "src": "node_modules/swiper/swiper.mjs",
+    "isDynamicEntry": true,
+    "imports": [
+      "_utils-BSDITuH3.js"
+    ]
+  },
+  "resources/js/app.js": {
+    "file": "assets/app-86tHMBOa.js",
+    "name": "app",
+    "src": "resources/js/app.js",
+    "isEntry": true,
+    "dynamicImports": [
+      "_lottie-B5z9iVy-.js",
+      "node_modules/swiper/swiper.mjs",
+      "node_modules/swiper/modules/index.mjs"
+    ],
+    "css": [
+      "assets/app-Du8Y8EHi.css"
+    ],
+    "assets": [
+      "assets/bootstrap-icons-mSm7cUeB.woff2",
+      "assets/bootstrap-icons-BeopsB42.woff"
+    ]
+  },
+  "resources/scss/app.scss": {
+    "file": "assets/app-cpTIcuxh.css",
+    "src": "resources/scss/app.scss",
+    "isEntry": true,
+    "name": "app",
+    "names": [
+      "app.css"
+    ]
+  }
+}
